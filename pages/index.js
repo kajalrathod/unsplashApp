@@ -1,19 +1,42 @@
 import Head from 'next/head'
-import styles from '../styles/Home.module.css'
-
+import styles from '../styles/Home.module.css';
+import Searchbar from '../components/Searchbar';
+import ImageList from '../components/ImageList';
+import unsplash from './api/unsplash';
+import { useEffect, useState } from 'react';
 export default function Home() {
+
+  const [images , setImages] = useState([]);
+
+  const onSearchSubmit = async (term) =>{
+    const response = await unsplash.get('/search/photos', {
+      params : {query :term}
+    });
+    setImages(response.data.results);
+    console.log("second call", response.data.results);
+  }
+
+  useEffect(()=>{
+    onSearchSubmit('cars')
+  },[]);
+
   return (
-    <div className={styles.container}>
+    <div className="ui container" style={{ marginTop: '10px' }}>
       <Head>
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+        />
       </Head>
-
-      <main className={styles.main}>
+      <Searchbar onSubmit={onSearchSubmit}/>
+      <ImageList images={images}/>
+      {/* <main className={styles.main}>
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
-      </main> 
+      </main>      */}
     </div>
   )
 }
